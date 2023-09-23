@@ -6,35 +6,35 @@
     <title>Página de Vídeos</title>
     <style>
         body {
-            background: #ffcc00; /* Cambié el fondo a amarillo */
+            background: #ffcc00;
             text-align: center;
             display: flex;
-            flex-direction: column; /* Alinea contenido verticalmente en el centro */
-            justify-content: center; /* Alinea contenido horizontalmente en el centro */
-            height: 100vh; /* Ajusta la altura para ocupar toda la ventana */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         #video-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Dos columnas de igual tamaño */
-            align-items: center; /* Centra los videos verticalmente */
-            gap: 20px; /* Espacio entre los videos */
-            margin: 0 auto; /* Centra el contenedor horizontalmente */
-            position: relative; /* Agregamos posición relativa al contenedor */
+            grid-template-columns: repeat(2, 1fr);
+            align-items: center;
+            gap: 20px;
+            margin: 0 auto;
+            position: relative;
         }
         video {
-            width: 450px; /* Ajustamos el tamaño al 150% (original: 300px) */
-            height: 300px; /* Ajustamos el tamaño al 150% (original: 200px) */
+            width: 450px;
+            height: 300px;
             transition: transform 0.5s;
             cursor: pointer;
-            position: relative; /* Agregamos posición relativa para el ajuste de margen */
+            position: relative;
         }
         video:hover {
             transform: scale(1.1);
         }
         #return-button {
-            margin-top: 20px; /* Ajusta el margen superior para mover el botón hacia abajo */
+            margin-top: 20px;
         }
-        /* Ajusta el tamaño del botón de inicio a 50x50 píxeles */
         #home-button {
             width: 50px;
             height: 50px;
@@ -43,11 +43,10 @@
 </head>
 <body>
     <div id="video-container">
-        <video id="video1" src="video1.mp4"></video>
-        <video id="video2" src="video2.mp4"></video>
+        <video id="video1" src="video1.mp4" onclick="toggleVideo('video1')"></video>
+        <video id="video2" src="video2.mp4" onclick="toggleVideo('video2')"></video>
     </div>
     <div id="return-button">
-        <!-- Utilizamos una etiqueta <a> con una imagen como enlace y asignamos un id -->
         <a href="index.html" id="home-link">
             <img id="home-button" src="home.png" alt="Ir a la página de inicio">
         </a>
@@ -58,54 +57,66 @@
         const video2 = document.getElementById('video2');
         let selectedVideo = null;
 
-        // Función para pausar y reiniciar la reproducción desde el principio
-        function playVideo(video) {
-            video.currentTime = 0;
-            video.play();
-            selectedVideo = video;
-            video.style.transform = 'scale(2.0)'; // Agrandar al seleccionar (un 150% más grande)
-            video.style.zIndex = '1'; // Asegura que el video seleccionado esté en la parte superior
-        }
+        function playVideo(videoId) {
+            const videoElement = document.getElementById(videoId);
 
-        // Función para volver al tamaño normal
-        function resetVideoSize(video) {
-            video.style.transform = 'scale(1)'; // Volver al tamaño original
-            video.style.zIndex = '0'; // Poner en la parte inferior
-        }
-
-        // Agregar eventos de teclado
-        document.addEventListener('keydown', (event) => {
-            if (event.key === '1') {
-                if (selectedVideo !== video1) {
-                    if (selectedVideo) {
-                        resetVideoSize(selectedVideo);
-                    }
-                    playVideo(video1);
-                    video2.pause();
+            if (selectedVideo !== videoElement) {
+                if (selectedVideo) {
+                    resetVideo(selectedVideo);
                 }
-            } else if (event.key === '2') {
-                if (selectedVideo !== video2) {
-                    if (selectedVideo) {
-                        resetVideoSize(selectedVideo);
-                    }
-                    playVideo(video2);
-                    video1.pause();
-                }
-            } else if (event.key === 'p' || event.key === 'P') { // Tecla para pausar ambos videos
-                video1.pause();
-                video2.pause();
-                resetVideoSize(video1);
-                resetVideoSize(video2);
+                videoElement.play();
+                selectedVideo = videoElement;
+                videoElement.style.transform = 'scale(2.0)';
+                videoElement.style.zIndex = '1';
+            } else {
+                toggleVideo(videoId);
             }
-        });
+        }
 
-        // Agregar interacción con la tecla 'h' para el enlace del botón "home.png"
+        function toggleVideo(videoId) {
+            const videoElement = document.getElementById(videoId);
+
+            if (selectedVideo === videoElement) {
+                if (videoElement.paused) {
+                    videoElement.play();
+                } else {
+                    videoElement.pause();
+                }
+            } else {
+                if (selectedVideo) {
+                    resetVideo(selectedVideo);
+                }
+                videoElement.play();
+                selectedVideo = videoElement;
+                videoElement.style.transform = 'scale(2.0)';
+                videoElement.style.zIndex = '1';
+                // Restablecer el tamaño del video anterior
+                resetVideo(videoId === 'video1' ? video2 : video1);
+            }
+        }
+
+        function resetVideo(video) {
+            video.pause();
+            video.currentTime = 0;
+            video.style.transform = 'scale(1)';
+            video.style.zIndex = '0';
+        }
+
         const homeLink = document.getElementById('home-link');
         document.addEventListener('keydown', (event) => {
             if (event.key === 'h' || event.key === 'H') {
                 if (homeLink) {
-                    homeLink.click(); // Simula un clic en el enlace cuando se presiona 'h'
+                    homeLink.click();
                 }
+            } else if (event.key === '1') {
+                playVideo('video1');
+            } else if (event.key === '2') {
+                playVideo('video2');
+            } else if (event.key === 'p' || event.key === 'P') {
+                video1.pause();
+                video2.pause();
+                resetVideo(video1);
+                resetVideo(video2);
             }
         });
     </script>
