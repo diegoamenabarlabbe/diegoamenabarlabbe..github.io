@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Vídeos</title>
+    <style>
+        body {
+            background: #ffcc00; /* Cambié el fondo a amarillo */
+            text-align: center;
+            display: flex;
+            flex-direction: column; /* Alinea contenido verticalmente en el centro */
+            justify-content: center; /* Alinea contenido horizontalmente en el centro */
+            height: 100vh; /* Ajusta la altura para ocupar toda la ventana */
+        }
+        #video-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Dos columnas de igual tamaño */
+            align-items: center; /* Centra los videos verticalmente */
+            gap: 20px; /* Espacio entre los videos */
+            margin: 0 auto; /* Centra el contenedor horizontalmente */
+            position: relative; /* Agregamos posición relativa al contenedor */
+        }
+        video {
+            width: 450px; /* Ajustamos el tamaño al 150% (original: 300px) */
+            height: 300px; /* Ajustamos el tamaño al 150% (original: 200px) */
+            transition: transform 0.5s;
+            cursor: pointer;
+            position: relative; /* Agregamos posición relativa para el ajuste de margen */
+        }
+        video:hover {
+            transform: scale(1.1);
+        }
+        #return-button {
+            margin-top: 20px; /* Ajusta el margen superior para mover el botón hacia abajo */
+        }
+        /* Ajusta el tamaño del botón de inicio a 50x50 píxeles */
+        #home-button {
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div id="video-container">
+        <video id="video1" src="video1.mp4"></video>
+        <video id="video2" src="video2.mp4"></video>
+    </div>
+    <div id="return-button">
+        <!-- Utilizamos una etiqueta <a> con una imagen como enlace y asignamos un id -->
+        <a href="index.html" id="home-link">
+            <img id="home-button" src="home.png" alt="Ir a la página de inicio">
+        </a>
+    </div>
+
+    <script>
+        const video1 = document.getElementById('video1');
+        const video2 = document.getElementById('video2');
+        let selectedVideo = null;
+
+        // Función para pausar y reiniciar la reproducción desde el principio
+        function playVideo(video) {
+            video.currentTime = 0;
+            video.play();
+            selectedVideo = video;
+            video.style.transform = 'scale(2.0)'; // Agrandar al seleccionar (un 150% más grande)
+            video.style.zIndex = '1'; // Asegura que el video seleccionado esté en la parte superior
+        }
+
+        // Función para volver al tamaño normal
+        function resetVideoSize(video) {
+            video.style.transform = 'scale(1)'; // Volver al tamaño original
+            video.style.zIndex = '0'; // Poner en la parte inferior
+        }
+
+        // Agregar eventos de teclado
+        document.addEventListener('keydown', (event) => {
+            if (event.key === '1') {
+                if (selectedVideo !== video1) {
+                    if (selectedVideo) {
+                        resetVideoSize(selectedVideo);
+                    }
+                    playVideo(video1);
+                    video2.pause();
+                }
+            } else if (event.key === '2') {
+                if (selectedVideo !== video2) {
+                    if (selectedVideo) {
+                        resetVideoSize(selectedVideo);
+                    }
+                    playVideo(video2);
+                    video1.pause();
+                }
+            } else if (event.key === 'p' || event.key === 'P') { // Tecla para pausar ambos videos
+                video1.pause();
+                video2.pause();
+                resetVideoSize(video1);
+                resetVideoSize(video2);
+            }
+        });
+
+        // Agregar interacción con la tecla 'h' para el enlace del botón "home.png"
+        const homeLink = document.getElementById('home-link');
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'h' || event.key === 'H') {
+                if (homeLink) {
+                    homeLink.click(); // Simula un clic en el enlace cuando se presiona 'h'
+                }
+            }
+        });
+    </script>
+</body>
+</html>

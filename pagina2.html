@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Página de contenido</title>
+  <style>
+    body {
+      background-color: #92D050;
+    }
+    .contenedor {
+      width: 100%;
+      height: 100%;
+      background-color: #92D050;
+    }
+    .fila {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .cuadro {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 50%;
+      height: 50%;
+    }
+    .video {
+      width: 100%;
+      height: 100%;
+    }
+    .boton {
+      width: 50px;
+      height: 50px;
+      background-color: #FF0000;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <div class="fila">
+      <div class="cuadro">
+        <video class="video" src="video1.mp4" controls></video>
+      </div>
+      <div class="cuadro">
+        <video class="video" src="video2.mp4" controls></video>
+      </div>
+    </div>
+    <div class="boton" onclick="cambiarVideo(1)">1</div>
+    <div class="boton" onclick="cambiarVideo(2)">2</div>
+  </div>
+  <script>
+    function cambiarVideo(numero) {
+      var videos = document.querySelectorAll(".video");
+      videos[numero - 1].play();
+      videos[numero].style.width = "120%";
+      videos[numero].style.transition = "all 1s ease";
+    }
+  </script>
+</body>
+</html>
