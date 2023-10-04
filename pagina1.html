@@ -56,6 +56,7 @@
         </a>
     </div>
 
+    <!-- Agregar el script de WebSocket -->
     <script>
         const video1 = document.getElementById('video1');
         const video2 = document.getElementById('video2');
@@ -123,6 +124,27 @@
                 resetVideo(video2);
             }
         });
+
+        const socket = new WebSocket('ws://192.168.1.8:81');
+
+        socket.onopen = function(event) {
+            console.log('Conectado al servidor WebSocket');
+        };
+
+        socket.onmessage = function(event) {
+            // El servidor WebSocket puede enviar comandos para controlar la reproducción
+            const command = event.data;
+            if (command === 'play') {
+                playVideo('video1');
+            } else if (command === 'pause') {
+                const videoElement = document.getElementById('video1');
+                videoElement.pause(); // Detener la reproducción del video1
+            }
+        };
+
+        socket.onclose = function(event) {
+            console.log('Conexión WebSocket cerrada');
+        };
     </script>
 </body>
 </html>
