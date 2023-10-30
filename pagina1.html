@@ -62,42 +62,28 @@
         let selectedVideo = null;
 
         function playVideo(videoId) {
-            const videoElement = document.getElementById(videoId);
+  const videoElement = document.getElementById(videoId);
 
-            if (selectedVideo !== videoElement) {
-                if (selectedVideo) {
-                    resetVideo(selectedVideo);
-                }
-                videoElement.play();
-                selectedVideo = videoElement;
-                videoElement.style.transform = 'scale(2.0)';
-                videoElement.style.zIndex = '1';
-            } else {
-                toggleVideo(videoId);
-            }
-        }
+  if (selectedVideo === videoElement) {
+    if (videoElement.paused) {
+      videoElement.play();
+    } else {
+      videoElement.pause();
+    }
+  } else {
+    if (selectedVideo) {
+      resetVideo(selectedVideo);
+    }
 
-        function toggleVideo(videoId) {
-            const videoElement = document.getElementById(videoId);
+    videoElement.play();
+    selectedVideo = videoElement;
+    videoElement.style.transform = 'scale(2.0)';
+    videoElement.style.zIndex = '1';
 
-            if (selectedVideo === videoElement) {
-                if (videoElement.paused) {
-                    videoElement.play();
-                } else {
-                    videoElement.pause();
-                }
-            } else {
-                if (selectedVideo) {
-                    resetVideo(selectedVideo);
-                }
-                videoElement.play();
-                selectedVideo = videoElement;
-                videoElement.style.transform = 'scale(2.0)';
-                videoElement.style.zIndex = '1';
-                // Restablecer el tamaño del video anterior
-                resetVideo(videoId === 'video1' ? video2 : video1);
-            }
-        }
+    // Restablecer el tamaño del video anterior
+    resetVideo(videoId === 'video1' ? video2 : video1);
+  }
+}
 
         function resetVideo(video) {
             video.pause();
@@ -123,6 +109,25 @@
                 resetVideo(video2);
             }
         });
+
+        // Iniciar previsualización al cargar la página
+        window.addEventListener('load', () => {
+            playVideo('video1');
+            setTimeout(() => {
+                playVideo('video2');
+                setTimeout(() => {
+                    resetVideo(video2); // Detiene la reproducción de video2
+                }, 2500); // Detiene video2 después de 2.5 segundos
+            }, 2500); // Inicia la previsualización de video2 después de 2.5 segundos
+        });
+
+        // Navegación a pagina2.html al hacer scroll hacia abajo
+        window.addEventListener('wheel', function (event) {
+            if (event.deltaY > 0) {
+                window.location.href = 'pagina2.html';
+    }
+});
+
     </script>
 </body>
 </html>

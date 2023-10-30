@@ -47,8 +47,8 @@
 </head>
 <body>
     <div id="video-container">
-        <video id="video1" src="videos/video1.mp4" onclick="playVideo('video1')"></video>
-        <video id="video2" src="videos/video2.mp4" onclick="playVideo('video2')"></video>
+        <video id="video1" src="videos/video3.mp4" onclick="playVideo('video1')"></video>
+        <video id="video2" src="videos/video4.mp4" onclick="playVideo('video2')"></video>
     </div>
     <div id="return-button">
         <a href="index.html" id="home-link">
@@ -112,14 +112,21 @@
 
         // Iniciar previsualización al cargar la página
         window.addEventListener('load', () => {
-    playVideo('video1');
-    setTimeout(() => {
-        playVideo('video2');
-        setTimeout(() => {
-            resetVideo(video2); // Detiene la reproducción de video2
-        }, 2500); // Detiene video2 después de 2.5 segundos
-    }, 2500); // Inicia la previsualización de video2 después de 2.5 segundos
-});
+            playVideo('video1');
+            setTimeout(() => {
+                playVideo('video2');
+                setTimeout(() => {
+                    resetVideo(video2); // Detiene la reproducción de video2
+                }, 2500); // Detiene video2 después de 2.5 segundos
+            }, 2500); // Inicia la previsualización de video2 después de 2.5 segundos
+        });
+
+        // Navegación a pagina1.html al hacer scroll hacia arriba
+        window.addEventListener('wheel', function (event) {
+            if (event.deltaY < 0) {
+                window.location.href = 'pagina1.html';
+            }
+        });
     </script>
 </body>
 </html>
