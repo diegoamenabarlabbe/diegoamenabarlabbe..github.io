@@ -10,7 +10,7 @@
 
     <style>
         body {
-            background: #ffcc00;
+            background: linear-gradient(to right, yellow 50%, green 50%);
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -47,8 +47,8 @@
 </head>
 <body>
     <div id="video-container">
-        <video id="video1" src="videos/video1.mp4" onclick="toggleVideo('video1')"></video>
-        <video id="video2" src="videos/video2.mp4" onclick="toggleVideo('video2')"></video>
+        <video id="video1" src="videos/video1.mp4" onclick="playVideo('video1')"></video>
+        <video id="video2" src="videos/video2.mp4" onclick="playVideo('video2')"></video>
     </div>
     <div id="return-button">
         <a href="index.html" id="home-link">
@@ -56,7 +56,6 @@
         </a>
     </div>
 
-    <!-- Agregar el script de WebSocket -->
     <script>
         const video1 = document.getElementById('video1');
         const video2 = document.getElementById('video2');
@@ -124,27 +123,6 @@
                 resetVideo(video2);
             }
         });
-
-        const socket = new WebSocket('ws://192.168.1.8:81');
-
-        socket.onopen = function(event) {
-            console.log('Conectado al servidor WebSocket');
-        };
-
-        socket.onmessage = function(event) {
-            // El servidor WebSocket puede enviar comandos para controlar la reproducción
-            const command = event.data;
-            if (command === 'play') {
-                playVideo('video1');
-            } else if (command === 'pause') {
-                const videoElement = document.getElementById('video1');
-                videoElement.pause(); // Detener la reproducción del video1
-            }
-        };
-
-        socket.onclose = function(event) {
-            console.log('Conexión WebSocket cerrada');
-        };
     </script>
 </body>
 </html>
