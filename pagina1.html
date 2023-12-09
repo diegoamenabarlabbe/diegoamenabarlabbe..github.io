@@ -1,50 +1,67 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página 1</title>
-    
+
     <!-- Agregar el enlace al archivo del favicon -->
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 
     <style>
         body {
-            background: linear-gradient(to right, yellow 50%, green 50%);
+            background: linear-gradient(to right, #ff452c 50%, #fff022 50%);
             text-align: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0; /* Elimina el margen predeterminado del body */
         }
+
         #video-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            display: flex;
             align-items: center;
-            gap: 20px;
-            margin: 0 auto;
-            position: relative;
+            justify-content: space-between;
+            width: 80%;
         }
+
         video {
-            width: 450px;
-            height: 300px;
+            width: 500px;
+            height: 350px;
             transition: transform 0.5s;
             cursor: pointer;
             position: relative;
+            margin: 0 auto; /* Centra el video horizontalmente */
         }
+
+        #video1 {
+            margin-right: 50px;
+        }
+
+        #video2 {
+            margin-left: 5px;
+        }
+
         video:hover {
-            transform: scale(1.1);
+            transform: scale(1.5);
         }
-        #return-button {
-            margin-top: 20px;
-        }
-        #home-button {
+
+        #home-button,
+        #reload-button {
             width: 50px;
             height: 50px;
+            margin-top: 150px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
         }
     </style>
 </head>
+
 <body>
     <div id="video-container">
         <video id="video1" src="videos/video1.mp4" onclick="playVideo('video1')"></video>
@@ -54,6 +71,9 @@
         <a href="index.html" id="home-link">
             <img id="home-button" src="home.png" alt="Ir a la página de inicio">
         </a>
+        <button id="reload-button" onclick="reloadPage()">
+            <img src="/reload.png" alt="Recargar" width="75" height="50">
+        </button>
     </div>
 
     <script>
@@ -62,6 +82,22 @@
         let selectedVideo = null;
 
         function playVideo(videoId) {
+            const videoElement = document.getElementById(videoId);
+
+            if (selectedVideo !== videoElement) {
+                if (selectedVideo) {
+                    resetVideo(selectedVideo);
+                }
+                videoElement.play();
+                selectedVideo = videoElement;
+                videoElement.style.transform = 'scale(2.0)';
+                videoElement.style.zIndex = '1';
+            } else {
+                toggleVideo(videoId);
+            }
+        }
+
+        function toggleVideo(videoId) {
             const videoElement = document.getElementById(videoId);
 
             if (selectedVideo === videoElement) {
@@ -74,12 +110,10 @@
                 if (selectedVideo) {
                     resetVideo(selectedVideo);
                 }
-
                 videoElement.play();
                 selectedVideo = videoElement;
                 videoElement.style.transform = 'scale(2.0)';
                 videoElement.style.zIndex = '1';
-
                 // Restablecer el tamaño del video anterior
                 resetVideo(videoId === 'video1' ? video2 : video1);
             }
@@ -110,23 +144,31 @@
             }
         });
 
-        // Esperar a que el contenido se cargue por completo antes de iniciar las previsualizaciones
-        document.addEventListener('DOMContentLoaded', () => {
-            playVideo('video1');
-            setTimeout(() => {
-                playVideo('video2');
-                setTimeout(() => {
-                    resetVideo(video2); // Detiene la reproducción de video2
-                }, 2500); // Detiene video2 después de 2.5 segundos
-            }, 2500); // Inicia la previsualización de video2 después de 2.5 segundos
-        });
-
-        // Navegación a pagina2.html al hacer scroll hacia abajo
+        // Navegación a la siguiente página al hacer scroll hacia abajo
         window.addEventListener('wheel', function (event) {
             if (event.deltaY > 0) {
-                window.location.href = 'pagina2.html';
+                navigateToNextPage();
             }
         });
+
+        function navigateToNextPage() {
+            const currentPageNumber = getCurrentPageNumber();
+            const nextPageNumber = currentPageNumber + 1;
+            window.location.href = `pagina${nextPageNumber}.html`;
+        }
+
+        function getCurrentPageNumber() {
+            // Obtener el número de la página actual desde la URL
+            const currentPageMatch = window.location.href.match(/pagina(\d+)\.html/);
+            return currentPageMatch ? parseInt(currentPageMatch[1]) : 1;
+        }
+
+        function reloadPage() {
+            resetVideo(video1);
+            resetVideo(video2);
+            location.reload();
+        }
     </script>
 </body>
+
 </html>
