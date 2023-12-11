@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página 5</title>
+
+    <!-- Agregar el enlace al archivo del favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <style>
+        body {
+            background: linear-gradient(to right, #ff452c 50%, #fff022 50%);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0; /* Elimina el margen predeterminado del body */
+        }
+
+        #video-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 80%;
+        }
+
+        img {
+            width: 500px;
+            height: 350px;
+            transition: all 0.5s ease; /* Cambiado a 'all' para incluir todos los estilos */
+            cursor: pointer;
+            position: relative;
+            margin: 0 auto; /* Centra la imagen horizontalmente */
+        }
+
+        #image1 {
+            margin-right: 50px;
+        }
+
+        #image2 {
+            margin-left: 5px;
+        }
+
+        #video-container img:hover {
+            transform: scale(1.5);
+        }
+
+        #return-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 500px; /* Ancho total de los botones */
+            margin-top: 20px; /* Ajusta la posición vertical de los botones */
+        }
+
+        #home-button,
+        #reload-button,
+        #audio-button {
+            width: 100px;
+            height: 100px;
+            margin-top: 150px; /* Ajusta la posición vertical de los botones */
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px; /* Espaciado entre botones */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="video-container">
+        <img id="image1" src="images/image1.jpg" onclick="playImage('image1')">
+        <img id="image2" src="images/image2.jpg" onclick="playImage('image2')">
+    </div>
+    <div id="return-button">
+        <a href="index.html" id="home-link">
+            <a href="index.html" id="home-link">
+                <img id="home-button" src="home.png" alt="Ir a la página de inicio">
+            </a>
+            <button id="reload-button" onclick="reloadPage()">
+                <img src="/reload.png" alt="Recargar" style="width: 100%; height: 100%;">
+        <button id="audio-button" onclick="toggleAudio()">
+            <img src="/play_pause.png" alt="Play/Pause" style="width: 70%; height: 70%;">
+        </button>
+    </div>
+    <audio id="audio" src="audios/audio1.mp3"></audio>
+
+    <script>
+        const image1 = document.getElementById('image1');
+        const image2 = document.getElementById('image2');
+        const audio = document.getElementById('audio');
+        let selectedImage = null;
+
+        // Guardar las posiciones originales de las imágenes
+        const originalImagePositions = {
+            image1: {
+                marginTop: '0',
+                marginLeft: 'auto',
+                marginRight: '50px'
+            },
+            image2: {
+                marginTop: '0',
+                marginLeft: '5px',
+                marginRight: 'auto'
+            }
+        };
+
+        function playImage(imageId) {
+            const imageElement = document.getElementById(imageId);
+
+            if (selectedImage !== imageElement) {
+                if (selectedImage) {
+                    resetImage(selectedImage);
+                }
+                imageElement.style.transform = 'scale(1.5)';
+                imageElement.style.zIndex = '1';
+                imageElement.style.marginTop = 'auto'; // Ajusta el margen superior según tus necesidades
+                imageElement.style.marginLeft = 'auto'; // Centra horizontalmente
+
+                // Ajusta la posición específica para la image2
+                if (imageId === 'image2') {
+                    imageElement.style.marginRight = 'auto';
+                    imageElement.style.marginLeft = 'auto'; // Ajusta el margen izquierdo según tus necesidades
+                } else {
+                    imageElement.style.marginRight = 'auto'; // Centra horizontalmente
+                }
+
+                selectedImage = imageElement;
+            } else {
+                toggleImage(imageId);
+            }
+        }
+
+        function toggleImage(imageId) {
+            const imageElement = document.getElementById(imageId);
+
+            if (selectedImage === imageElement) {
+                // Agrega tu lógica específica para reproducir/pausar imágenes aquí, si es necesario.
+            } else {
+                if (selectedImage) {
+                    resetImage(selectedImage);
+                }
+                imageElement.style.transform = 'scale(1.5)';
+                imageElement.style.zIndex = '1';
+                // Restablecer el tamaño de la imagen anterior
+                resetImage(imageId === 'image1' ? image2 : image1);
+                selectedImage = imageElement;
+            }
+        }
+
+        function resetImage(image) {
+            image.style.transform = 'scale(1)';
+            image.style.zIndex = '0';
+
+            const imageId = image.id;
+            const originalPosition = originalImagePositions[imageId];
+
+            if (originalPosition) {
+                image.style.marginTop = originalPosition.marginTop;
+                image.style.marginLeft = originalPosition.marginLeft;
+                image.style.marginRight = originalPosition.marginRight;
+            }
+        }
+
+        function reloadPage() {
+            resetImage(image1);
+            resetImage(image2);
+            location.reload();
+        }
+
+        function toggleAudio() {
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
+        }
+
+        // Eventos de teclado para seleccionar imágenes con las teclas 1, 2 y recargar con la tecla 3
+        document.addEventListener('keydown', (event) => {
+            if (event.key === '1') {
+                playImage('image1');
+            } else if (event.key === '2') {
+                playImage('image2');
+            } else if (event.key === '3') {
+                reloadPage();
+            }
+        });
+
+        // Navegación al hacer scroll
+        window.addEventListener('wheel', function (event) {
+            if (event.deltaY > 0) {
+                // Scrolling hacia abajo
+                navigateToNextPage();
+            } else {
+                // Scrolling hacia arriba
+                navigateToPreviousPage();
+            }
+        });
+
+        function navigateToNextPage() {
+            const currentPageNumber = getCurrentPageNumber();
+            const nextPageNumber = currentPageNumber + 1;
+            window.location.href = `pagina${nextPageNumber}.html`;
+        }
+
+        function navigateToPreviousPage() {
+            const currentPageNumber = getCurrentPageNumber();
+            if (currentPageNumber > 1) {
+                const previousPageNumber = currentPageNumber - 1;
+                window.location.href = `pagina${previousPageNumber}.html`;
+            }
+        }
+
+        function getCurrentPageNumber() {
+            // Obtener el número de la página actual desde la URL
+            const currentPageMatch = window.location.href.match(/pagina(\d+)\.html/);
+            return currentPageMatch ? parseInt(currentPageMatch[1]) : 1;
+        }
+    </script>
+</body>
+
+</html>
