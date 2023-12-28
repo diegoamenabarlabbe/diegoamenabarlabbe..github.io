@@ -18,23 +18,35 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0; /* Elimina el margen predeterminado del body */
+            margin: 0;
         }
 
         #video-container {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             width: 80%;
+            margin-bottom: 100px;
         }
 
-        video {
+        .video {
             width: 500px;
             height: 350px;
-            transition: all 0.5s ease; /* Cambiado a 'all' para incluir todos los estilos */
+            transition: all 0.5s ease;
             cursor: pointer;
             position: relative;
-            margin: 0 auto; /* Centra el video horizontalmente */
+            margin: 0 auto;
+            z-index: 0;
+            opacity: 1;
+        }
+
+        .video:not(:hover) {
+            opacity: 0.7;
+        }
+
+        .video.playing {
+            opacity: 1;
+            z-index: 1;
         }
 
         #video1 {
@@ -47,52 +59,99 @@
 
         video:hover {
             transform: scale(1.5);
+            z-index: 1;
+        }
+
+        #return-button {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
         }
 
         #home-button,
-        #reload-button {
+        #reload-button,
+        #navigate-back-button,
+        #navigate-forward-button {
             width: 100px;
             height: 100px;
-            margin-top: 150px; /* Ajusta la posición vertical de los botones */
+            margin-right: 10px;
             background: none;
             border: none;
             cursor: pointer;
             padding: 0;
+            opacity: 0.7;
+            transition: opacity 0.5s ease;
+        }
+
+        #home-button:hover,
+        #reload-button:hover,
+        #navigate-back-button:hover,
+        #navigate-forward-button:hover {
+            opacity: 1;
+        }
+
+        @keyframes highlight {
+            0% {
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0);
+            }
+            100% {
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+            }
+        }
+
+        body.highlight {
+            animation: highlight 0.5s ease;
+        }
+
+        @keyframes selectionFlash {
+            0%, 100% {
+                background-color: transparent;
+            }
+            50% {
+                background-color: #ffcc00; /* Color de destello (puedes ajustar según tu preferencia) */
+            }
+        }
+
+        .selected {
+            animation: selectionFlash 0.5s ease;
         }
     </style>
 </head>
 
 <body>
     <div id="video-container">
-        <video id="video1" src="videos/video3.mp4" onclick="playVideo('video1')"></video>
-        <video id="video2" src="videos/video4.mp4" onclick="playVideo('video2')"></video>
+        <video class="video" id="video1" src="videos/video3.mp4" onclick="playVideo('video1')"></video>
+        <video class="video" id="video2" src="videos/video4.mp4" onclick="playVideo('video2')"></video>
     </div>
     <div id="return-button">
         <a href="index.html" id="home-link">
-            <img id="home-button" src="home.png" alt="Ir a la página de inicio">
-        </a>
-        <button id="reload-button" onclick="reloadPage()">
+            <img id="home-button" src="home.png" alt="Ir a la página de inicio" onmouseover="playSound('buttonHoverSound.mp3')"></a>
+        <button id="reload-button" onmouseover="playSound('buttonHoverSound.mp3')" onclick="reloadPage()">
             <img src="/reload.png" alt="Recargar" style="width: 100%; height: 100%;">
         </button>
+        <button id="navigate-back-button" onmouseover="playSound('buttonHoverSound.mp3')" onclick="navigatePage(-1)">
+            <img src="/navigate-back.png" alt="Retroceder" style="width: 100%; height: 100%;">
+        </button>
+        <button id="navigate-forward-button" onmouseover="playSound('buttonHoverSound.mp3')" onclick="navigatePage(1)">
+            <img src="/navigate-forward.png" alt="Avanzar" style="width: 100%; height: 100%;">
+        </button>
     </div>
+
+    <audio id="buttonHoverSound" src="buttonHoverSound.mp3"></audio>
 
     <script>
         const video1 = document.getElementById('video1');
         const video2 = document.getElementById('video2');
         let selectedVideo = null;
 
-        // Guardar las posiciones originales
         const originalPositions = {
-            video1: {
-                marginTop: '0',
-                marginLeft: 'auto',
-                marginRight: '50px'
-            },
-            video2: {
-                marginTop: '0',
-                marginLeft: '5px',
-                marginRight: 'auto'
-            }
+            video1: { marginTop: '0', marginLeft: 'auto', marginRight: '50px' },
+            video2: { marginTop: '0', marginLeft: '5px', marginRight: 'auto' }
         };
 
         function playVideo(videoId) {
@@ -104,17 +163,28 @@
                 }
                 videoElement.play();
                 selectedVideo = videoElement;
+                videoElement.classList.add('playing', 'selected');
                 videoElement.style.transform = 'scale(1.5)';
                 videoElement.style.zIndex = '1';
-                videoElement.style.marginTop = 'auto'; // Ajusta el margen superior según tus necesidades
-                videoElement.style.marginLeft = 'auto'; // Centra horizontalmente
+                videoElement.style.marginTop = 'auto';
+                videoElement.style.marginLeft = 'auto';
 
-                // Ajusta la posición específica para el video2
                 if (videoId === 'video2') {
                     videoElement.style.marginRight = 'auto';
-                    videoElement.style.marginLeft = 'auto'; // Ajusta el margen izquierdo según tus necesidades
+                    videoElement.style.marginLeft = 'auto';
                 } else {
-                    videoElement.style.marginRight = 'auto'; // Centra horizontalmente
+                    videoElement.style.marginRight = 'auto';
+                }
+
+                document.body.classList.add('highlight');
+                setTimeout(() => {
+                    document.body.classList.remove('highlight');
+                }, 500);
+
+                if (videoId === 'video1') {
+                    playSound('buttonSound1.mp3');
+                } else if (videoId === 'video2') {
+                    playSound('buttonSound2.mp3');
                 }
             } else {
                 toggleVideo(videoId);
@@ -131,14 +201,11 @@
                     videoElement.pause();
                 }
             } else {
-                if (selectedVideo) {
-                    resetVideo(selectedVideo);
-                }
+                resetVideo(selectedVideo);
                 videoElement.play();
                 selectedVideo = videoElement;
-                videoElement.style.transform = 'scale(1.5)';
-                videoElement.style.zIndex = '1';
-                // Restablecer el tamaño del video anterior
+                videoElement.classList.add('playing', 'selected');
+                videoElement.style.transform = 'scale(1.6)';
                 resetVideo(videoId === 'video1' ? video2 : video1);
             }
         }
@@ -148,6 +215,7 @@
             video.currentTime = 0;
             video.style.transform = 'scale(1)';
             video.style.zIndex = '0';
+            video.classList.remove('playing', 'selected');
 
             const videoId = video.id;
             const originalPosition = originalPositions[videoId];
@@ -161,46 +229,40 @@
 
         const homeLink = document.getElementById('home-link');
         document.addEventListener('keydown', (event) => {
-    if (event.key === 'h' || event.key === 'H') {
-        if (homeLink) {
-            homeLink.click();
-        }
-    } else if (event.key === '1') {
-        toggleVideo('video1');
-    } else if (event.key === '2') {
-        toggleVideo('video2');
-    } else if (event.key === '3') {
-        reloadPage();
-    }
-});
-
-        // Navegación al hacer scroll
-        window.addEventListener('wheel', function (event) {
-            if (event.deltaY > 0) {
-                // Scrolling hacia abajo
-                navigateToNextPage();
-            } else {
-                // Scrolling hacia arriba
-                navigateToPreviousPage();
+            if (event.key === 'h' || event.key === 'H') {
+                if (homeLink) {
+                    homeLink.click();
+                }
+            } else if (event.key === '1') {
+                playVideo('video1');
+            } else if (event.key === '2') {
+                playVideo('video2');
+            } else if (event.key === '3') {
+                reloadPage();
             }
         });
 
-        function navigateToNextPage() {
-            const currentPageNumber = getCurrentPageNumber();
-            const nextPageNumber = currentPageNumber + 1;
-            window.location.href = `pagina${nextPageNumber}.html`;
-        }
+        window.addEventListener('wheel', function (event) {
+            const pageNumberOffset = event.deltaY > 0 ? 1 : -1;
+            navigatePage(pageNumberOffset);
+        });
 
-        function navigateToPreviousPage() {
+        function navigatePage(pageNumberOffset) {
             const currentPageNumber = getCurrentPageNumber();
-            if (currentPageNumber > 1) {
-                const previousPageNumber = currentPageNumber - 1;
-                window.location.href = `pagina${previousPageNumber}.html`;
+            const targetPageNumber = doesPageExist(currentPageNumber + pageNumberOffset)
+                ? currentPageNumber + pageNumberOffset
+                : console.log(`La página ${targetPageNumber} no existe.`);
+
+            if (doesPageExist(targetPageNumber)) {
+                window.location.href = `pagina${targetPageNumber}.html`;
             }
         }
 
+        function doesPageExist(pageNumber) {
+            return pageNumber >= 1 && pageNumber <= 10;
+        }
+
         function getCurrentPageNumber() {
-            // Obtener el número de la página actual desde la URL
             const currentPageMatch = window.location.href.match(/pagina(\d+)\.html/);
             return currentPageMatch ? parseInt(currentPageMatch[1]) : 1;
         }
@@ -209,6 +271,11 @@
             resetVideo(video1);
             resetVideo(video2);
             location.reload();
+        }
+
+        function playSound(soundFile) {
+            const audio = new Audio(soundFile);
+            audio.play();
         }
     </script>
 </body>
